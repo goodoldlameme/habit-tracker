@@ -53,6 +53,7 @@ class RecyclerAdapter(private val habits: ArrayList<Habit>) : RecyclerView.Adapt
             view.itemType.text = habit.type.name
             view.itemColor.text = habit.priority.toString()
             view.itemPeriod.text = Strings.get(R.string.period_message, habit.period)
+            view.itemCount.text = Strings.get(R.string.count_message, habit.count)
             val background = ShapeDrawable()
             background.shape = OvalShape()
             background.paint.color = habit.color

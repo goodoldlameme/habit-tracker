@@ -2,106 +2,99 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:padding="10dp"
+        android:layout_margin="10dp"
+        android:padding="15dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="100dp">
 
     <LinearLayout
             android:id="@+id/itemCharacteristics"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="10dp"
             android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/itemInfo"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintEnd_toStartOf="@id/itemInfo"
+            android:layout_marginRight="10dp">
+
         <TextView
                 android:id="@+id/itemColor"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_weight="1"
-                android:textColor="#fff"
-                tools:text = "5"
                 android:background="@color/design_default_color_primary_dark"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/itemType"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                android:gravity="center"
+                android:textColor="#fff"
+                tools:text="5" />
 
         <TextView
                 android:id="@+id/itemType"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="0dp"
                 android:layout_gravity="center"
-                android:gravity="center"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/itemColor"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:text="Good"/>
+                android:gravity="center"
+                android:textColor="#000"
+                tools:text="Good" />
     </LinearLayout>
+
     <LinearLayout
             android:id="@+id/itemInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/itemPeriod"
+            app:layout_constraintStart_toEndOf="@+id/itemCharacteristics"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/itemCharacteristics"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_marginRight="10dp">
+
         <TextView
-            android:id="@+id/itemName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|start"
-            android:layout_marginRight="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_weight="1"
-            app:layout_constraintBottom_toTopOf="@+id/itemPriority"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Some name"/>
+                android:id="@+id/itemName"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="start"
+                android:gravity="start"
+                android:layout_weight="0.5"
+                android:textColor="#000"
+                android:textSize="16sp"
+                tools:text="Some name" />
 
         <TextView
                 android:id="@+id/itemDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|start"
-                android:layout_marginRight="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
+                android:gravity="start"
                 android:ellipsize="end"
                 android:maxLines="5"
-                app:layout_constraintBottom_toTopOf="@+id/itemType"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/itemPeriod"
-                tools:text="Some description"/>
-
-        <TextView
-                android:id="@+id/itemPeriod"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|start"
-                android:layout_marginLeft="30dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_weight="1"
-                android:textColor="#9C989C"
-                android:textSize="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/itemDescription"
-                tools:text="every 2 days"/>
+                android:textColor="#8C8A8A"
+                tools:text="Some description" />
     </LinearLayout>
+
+    <TextView
+            android:id="@+id/itemPeriod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#9C989C"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="every 2 days" />
+    
+    <TextView
+            android:id="@+id/itemCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#9C989C"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/itemPeriod"
+            tools:text="10 times" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
