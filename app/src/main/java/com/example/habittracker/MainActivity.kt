@@ -4,6 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.habittracker.Strings.HABIT_EDIT_CREATE
+import com.example.habittracker.Strings.HABIT_EDIT_POSITION
+import com.example.habittracker.Strings.START_CREATE_HABIT_ACTIVITY_REQUEST_CODE
+import com.example.habittracker.Strings.START_EDIT_HABIT_ACTIVITY_REQUEST_CODE
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -13,18 +17,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: RecyclerAdapter
     private val habits = ArrayList<Habit>()
 
-    companion object {
-        const val START_CREATE_HABIT_ACTIVITY_REQUEST_CODE = 0
-        const val START_EDIT_HABIT_ACTIVITY_REQUEST_CODE = 1
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val savedHabits = savedInstanceState?.getParcelableArrayList<Habit>(HABITS_STATE)
+        if (savedHabits != null)
+            habits.addAll(savedHabits)
+
         linearLayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = linearLayoutManager
         adapter = RecyclerAdapter(habits)
@@ -35,11 +35,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelableArrayList(HABITS_STATE, habits)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val habit = data?.extras?.getParcelable<Habit>(HabitActivity.HABIT_CREATE)
+        val habit = data?.extras?.getParcelable<Habit>(HABIT_EDIT_CREATE)
+        val position = data?.extras?.getInt(HABIT_EDIT_POSITION)
         when(requestCode){
             START_CREATE_HABIT_ACTIVITY_REQUEST_CODE -> handleHabitCreation(habit)
-            START_EDIT_HABIT_ACTIVITY_REQUEST_CODE -> handleHabitEditing(habit)
+            START_EDIT_HABIT_ACTIVITY_REQUEST_CODE -> handleHabitEditing(habit, position)
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
     }
@@ -51,10 +57,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleHabitEditing(habit: Habit?){
+    private fun handleHabitEditing(habit: Habit?, position: Int?){
         if (habit != null) {
-            habits.add(habit)
-            adapter.notifyDataSetChanged()
+            habits[position as Int] = habit
+            adapter.notifyItemChanged(position)
         }
     }
-}
+
+    companion object{
+        private const val HABITS_STATE = "HABITS_STATE"
+    }}

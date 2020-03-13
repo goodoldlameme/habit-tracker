@@ -4,11 +4,13 @@ import android.content.Intent
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import com.example.habittracker.Strings.HABIT_EDIT_CREATE
+import com.example.habittracker.Strings.HABIT_EDIT_POSITION
+import com.example.habittracker.Strings.START_EDIT_HABIT_ACTIVITY_REQUEST_CODE
 import kotlinx.android.synthetic.main.recyclerview_item_row.view.*
 
 
@@ -37,8 +39,10 @@ class RecyclerAdapter(private val habits: ArrayList<Habit>) : RecyclerView.Adapt
         override fun onClick(v: View) {
             val context = itemView.context as MainActivity
             val editHabitIntent = Intent(context, HabitActivity::class.java)
-            editHabitIntent.putExtra(HABIT_EDIT, habit)
-            context.startActivityForResult(editHabitIntent, MainActivity.START_EDIT_HABIT_ACTIVITY_REQUEST_CODE)
+            editHabitIntent
+                .putExtra(HABIT_EDIT_CREATE, habit)
+                .putExtra(HABIT_EDIT_POSITION, adapterPosition)
+            context.startActivityForResult(editHabitIntent, START_EDIT_HABIT_ACTIVITY_REQUEST_CODE)
         }
 
         @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -53,10 +57,6 @@ class RecyclerAdapter(private val habits: ArrayList<Habit>) : RecyclerView.Adapt
             background.shape = OvalShape()
             background.paint.color = habit.color
             view.itemColor.background = background
-        }
-
-        companion object {
-            const val HABIT_EDIT = "HABIT_EDIT"
         }
     }
 }
