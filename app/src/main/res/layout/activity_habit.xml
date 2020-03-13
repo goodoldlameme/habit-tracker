@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".HabitActivity"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+    <EditText
+            android:id="@+id/nameTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/edit_text_name"
+            android:inputType="textPersonName"
+            android:autofillHints="@string/edit_text_name" />
+
+    <EditText
+            android:id="@+id/descriptionTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/edit_text_description"
+            android:inputType="textMultiLine"
+            android:autofillHints="@string/edit_text_description" />
+
+    <Spinner
+            android:id="@+id/prioritySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/priorities"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+    <RadioGroup
+            android:id="@+id/habitRadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:checkedButton="@+id/habitTypeRadioButtonGood">
+        <RadioButton
+                android:id="@+id/habitTypeRadioButtonBad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_button_bad"/>
+        <RadioButton
+                android:id="@+id/habitTypeRadioButtonGood"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_button_good"/>
+    </RadioGroup>
+
+    <EditText
+            android:id="@+id/countTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/edit_text_count"
+            android:inputType="number"
+            android:autofillHints="@string/edit_text_count" />
+
+    <EditText
+            android:id="@+id/periodTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/edit_text_period"
+            android:inputType="number"
+            android:autofillHints="@string/edit_text_period" />
+
+    <Button
+            android:id="@+id/save_habit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_text_save"
+            android:layout_marginTop="10dp"
+            android:enabled="false"/>
+</LinearLayout>
