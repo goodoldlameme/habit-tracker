@@ -2,6 +2,7 @@ package com.example.habittracker
 
 import android.os.Parcel
 import android.os.Parcelable
+import java.util.*
 
 class Habit(val name: String,
             val description: String,
@@ -9,7 +10,9 @@ class Habit(val name: String,
             val type: HabitType,
             val count: Int,
             val period: Int,
-            val color: Int)
+            val color: Int,
+            val id: UUID = UUID.randomUUID(),
+            val creationDate: Calendar = Calendar.getInstance())
     : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString().toString(),

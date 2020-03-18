@@ -1,0 +1,63 @@
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/bottomSheetLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bottom_sheet_color"
+        android:orientation="vertical"
+        android:clickable = "true"
+        app:behavior_peekHeight="55dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <TextView
+            android:id="@+id/bottomSheetName"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:padding="16dp"
+            android:textSize="17sp"
+            android:background="@color/bottom_sheet_info_color"
+            android:text="@string/bottom_sheet_text" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:text="@string/sortInfo"/>
+
+            <RadioGroup
+                android:id="@+id/sortRadioGroup"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end">
+                <RadioButton
+                    android:id="@+id/ascendingSort"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@drawable/ic_arrow_upward_black_24dp"/>
+                <RadioButton
+                    android:id="@+id/descendingSort"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@drawable/ic_arrow_downward_black_24dp"/>
+            </RadioGroup>
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/bottomSheetSearch"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:autofillHints="@string/find_string"
+            android:padding="16dp"
+            android:hint="@string/find_string"
+            android:inputType="textPersonName"/>
+</LinearLayout>

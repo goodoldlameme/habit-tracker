@@ -30,14 +30,15 @@
                 tools:text="5" />
 
         <TextView
-                android:id="@+id/itemType"
-                android:layout_width="50dp"
-                android:layout_height="0dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textColor="#000"
-                tools:text="Good" />
+            android:id="@+id/itemType"
+            android:layout_width="50dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="#000"
+            android:textSize="12sp"
+            tools:text="Good" />
     </LinearLayout>
 
     <LinearLayout
@@ -76,6 +77,28 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/itemCreation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="#9C989C"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1s ago" />
+
+    <TextView
+        android:id="@+id/itemCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="#9C989C"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/itemCreation"
+        tools:text="10 times" />
+
+    <TextView
             android:id="@+id/itemPeriod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -83,18 +106,8 @@
             android:textColor="#9C989C"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/itemCount"
             tools:text="every 2 days" />
-    
-    <TextView
-            android:id="@+id/itemCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="#9C989C"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/itemPeriod"
-            tools:text="10 times" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
