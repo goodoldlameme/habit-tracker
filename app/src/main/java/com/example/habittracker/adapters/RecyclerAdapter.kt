@@ -14,7 +14,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class RecyclerAdapter(private val habits: ArrayList<Habit>) : RecyclerView.Adapter<RecyclerAdapter.HabitHolder>()  {
+class RecyclerAdapter(private val habits: List<Habit>) : RecyclerView.Adapter<RecyclerAdapter.HabitHolder>()  {
     private lateinit var onViewHolderClickListener: (Habit, Int) -> Unit
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HabitHolder {
         val inflatedView = parent.inflate(R.layout.recyclerview_item_row, false)
@@ -22,6 +22,10 @@ class RecyclerAdapter(private val habits: ArrayList<Habit>) : RecyclerView.Adapt
             inflatedView,
             onViewHolderClickListener
         )
+    }
+
+    fun getItemAt(position: Int): Habit{
+        return habits[position]
     }
 
     override fun getItemCount(): Int = habits.size

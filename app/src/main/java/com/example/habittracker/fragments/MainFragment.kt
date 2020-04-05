@@ -1,21 +1,23 @@
 package com.example.habittracker.fragments
 
+import RecyclerViewFragment
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.habittracker.*
-import com.example.habittracker.events.HabitChangedEventHandler
 import com.example.habittracker.models.Habit
 import com.example.habittracker.models.ListViewSettings
 import com.example.habittracker.models.viewmodels.ListHabitsViewModel
-import com.example.habittracker.repository.LocalHabitsProvider
+import com.example.habittracker.models.viewmodels.ListViewModelProviderFactory
+import com.example.habittracker.repository.RoomHabitsProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import kotlinx.android.synthetic.main.main_fragment.*
@@ -26,7 +28,7 @@ class MainFragment : Fragment(){
     private lateinit var viewModel: ListHabitsViewModel
 
     companion object{
-        private val BOTTOM_SHEET_STATE = "BOTTOM_SHEET_STATE"
+        private const val BOTTOM_SHEET_STATE = "BOTTOM_SHEET_STATE"
     }
 
     interface MainFragmentCallback{
@@ -45,17 +47,10 @@ class MainFragment : Fragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, object: ViewModelProvider.Factory{
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return ListHabitsViewModel(
-                    LocalHabitsProvider
-                ) as T
-            }
-        }).get(ListHabitsViewModel::class.java)
-
-        HabitChangedEventHandler.setOnHabitChangeListener(
-            viewModel
-        )
+        activity?.let{ activity ->
+            viewModel = ViewModelProvider(activity, ListViewModelProviderFactory)
+                .get(ListHabitsViewModel::class.java)
+        }
     }
 
     override fun onCreateView(
@@ -72,33 +67,32 @@ class MainFragment : Fragment(){
         setupBottomSheet(savedInstanceState?.getInt(BOTTOM_SHEET_STATE) ?: BottomSheetBehavior.STATE_COLLAPSED)
         setupFilters()
         setUpViewModel()
+        setFragment(bottomSheetBehavior?.state ?: BottomSheetBehavior.STATE_COLLAPSED)
     }
 
     private fun setUpViewModel(){
-        viewModel.habits.observe(this, Observer { habits ->
-            setFragment(bottomSheetBehavior?.state
-                ?: BottomSheetBehavior.STATE_COLLAPSED, viewModel.getFilteredHabits() as ArrayList<Habit>) })
-
-        viewModel.viewSettings.value?.let{ settings ->
-            bottomSheetSearch.setText(settings.searchByName)
-            if (settings.sortByDescending != null)
-                sortRadioGroup.check(if (settings.sortByDescending as Boolean) R.id.descendingSort else R.id.ascendingSort)
-        }
+        viewModel.viewSettings.observe(this, Observer { viewSettings -> viewSettings?.let{ settings ->
+            shouldChange(settings.searchByName, bottomSheetSearch)?.let{ newField -> bottomSheetSearch.setText(newField)}
+            settings.sortByDescending?.let{sortByDescending ->
+                if (sortByDescending != isRadioButtonDescending(sortRadioGroup.checkedRadioButtonId))
+                    sortRadioGroup.check(isDescendingToRadioButton(sortByDescending))
+            } }
+        })
     }
+
+    private fun isRadioButtonDescending(radioButtonId: Int): Boolean = radioButtonId == descendingSort.id
+
+    private fun isDescendingToRadioButton(sortByDescending: Boolean): Int =
+        if (sortByDescending) R.id.descendingSort else R.id.ascendingSort
+
+    private fun shouldChange(newField: String?, editText: EditText): String? =
+        if (newField != null && newField != editText.text.toString()) newField else null
 
     private fun setUpSearchFilter(){
         bottomSheetSearch.doAfterTextChanged { text ->
             if (bottomSheetBehavior?.state != BottomSheetBehavior.STATE_COLLAPSED) {
                 val newText = text?.toString()
-                viewModel.viewSettings.value?.let{ settings ->
-                    settings.searchByName = newText
-                    viewModel.updateViewSettings(settings)
-                } ?: viewModel.updateViewSettings(
-                    ListViewSettings(
-                        searchByName = newText
-                    )
-                )
-                viewModel.loadHabits()
+                viewModel.updateViewSettings { settings -> settings?.let{ it.searchByName = newText }}
             }
         }
     }
@@ -106,16 +100,8 @@ class MainFragment : Fragment(){
     private fun setUpSortFilter(){
         sortRadioGroup.setOnCheckedChangeListener { _, checkedId ->
             if (bottomSheetBehavior?.state != BottomSheetBehavior.STATE_COLLAPSED) {
-                val sortOptions = checkedId == R.id.descendingSort
-                viewModel.viewSettings.value?.let { settings ->
-                    settings.sortByDescending = sortOptions
-                    viewModel.updateViewSettings(settings)
-                } ?: viewModel.updateViewSettings(
-                    ListViewSettings(
-                        sortByDescending = sortOptions
-                    )
-                )
-                viewModel.loadHabits()
+                val sortByDescending = isRadioButtonDescending(checkedId)
+                viewModel.updateViewSettings { settings -> settings?.let{ it.sortByDescending = sortByDescending }}
             }
         }
     }
@@ -131,17 +117,17 @@ class MainFragment : Fragment(){
         bottomSheetBehavior?.addBottomSheetCallback(object: BottomSheetBehavior.BottomSheetCallback(){
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
 
-            override fun onStateChanged(bottomSheet: View, newState: Int) = viewModel.loadHabits()
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                setFragment(bottomSheetBehavior?.state ?: BottomSheetBehavior.STATE_COLLAPSED)
+            }
         })
     }
 
-    private fun getViewPagerFragment(habits: ArrayList<Habit>): ViewPagerFragment?{
+    private fun getViewPagerFragment(): ViewPagerFragment?{
             return if (bottomSheetSearch.text.isNullOrEmpty()){
-                viewModel.updateViewSettings(null)
+                viewModel.clearViewSettings()
                 sortRadioGroup.clearCheck()
-                ViewPagerFragment.newInstance(
-                    habits
-                )
+                ViewPagerFragment()
             }
             else null
     }
@@ -158,12 +144,10 @@ class MainFragment : Fragment(){
     }
 
 
-    private fun setFragment(state: Int, habits: ArrayList<Habit>) =
+    private fun setFragment(state: Int) =
         when(state){
-            BottomSheetBehavior.STATE_COLLAPSED -> getViewPagerFragment(habits)
-            BottomSheetBehavior.STATE_EXPANDED -> RecyclerViewFragment.newInstance(
-                habits
-            )
+            BottomSheetBehavior.STATE_COLLAPSED -> getViewPagerFragment()
+            BottomSheetBehavior.STATE_EXPANDED -> RecyclerViewFragment()
             else -> null
         }?.let { fragment ->  addNewFragment(fragment) }
 }

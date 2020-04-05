@@ -3,43 +3,58 @@ package com.example.habittracker.models.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.habittracker.events.HabitChangeListener
+import androidx.lifecycle.viewModelScope
+import com.example.habittracker.database.HabitEntity
 import com.example.habittracker.repository.HabitsProvider
 import com.example.habittracker.models.ListViewSettings
 import com.example.habittracker.models.Habit
+import kotlinx.coroutines.launch
 
-class ListHabitsViewModel(private val habitsProvider: HabitsProvider) : ViewModel(),
-    HabitChangeListener {
-    private val mutableHabits: MutableLiveData<ArrayList<Habit>> = MutableLiveData()
-    val habits: LiveData<ArrayList<Habit>> = mutableHabits
+class ListHabitsViewModel(private val habitsProvider: HabitsProvider) : ViewModel()
+{
+    val habitsSource: LiveData<List<HabitEntity>> by lazy {
+        habitsProvider.loadHabits()
+    }
 
     private val mutableViewSettings: MutableLiveData<ListViewSettings> = MutableLiveData()
     val viewSettings: LiveData<ListViewSettings> = mutableViewSettings
 
-    init{
-        loadHabits()
+    private val mutableFilteredHabits: MutableLiveData<List<Habit>> = MutableLiveData()
+    val filteredHabits: LiveData<List<Habit>> = mutableFilteredHabits
+
+    private val mutableHabits: MutableLiveData<List<HabitEntity>> = MutableLiveData()
+
+    fun updateViewSettings(selector: (ListViewSettings?) -> Unit){
+        if (mutableViewSettings.value == null)
+            mutableViewSettings.value = ListViewSettings()
+        selector(mutableViewSettings.value)
+        mutableHabits.value?.let{ updateFilteredHabits(it) }
     }
 
-    fun updateViewSettings(listViewSettings: ListViewSettings?){
-        mutableViewSettings.value = listViewSettings
+    fun clearViewSettings(){
+        mutableViewSettings.value = null
     }
 
-    fun loadHabits(){
-        mutableHabits.value = habitsProvider.loadHabits()
+    fun updateFilteredHabits(habits: List<HabitEntity>){
+        mutableHabits.value = habits
+
+        val habitEntities: List<HabitEntity> = mutableViewSettings.value?.let{ settings -> getFilteredHabits(habits, settings) } ?: habits
+
+        mutableFilteredHabits.value = habitEntities.map { habitEntity -> Habit.fromHabitEntity(habitEntity)}
     }
 
-    fun getFilteredHabits(): ArrayList<Habit>?{
-        return mutableHabits.value?.let{ habitsValue ->
-            return mutableViewSettings.value?.let{ settings -> getFilteredHabits(habitsValue, settings) } ?: habitsValue }
+    fun deleteHabit(habitToDelete: HabitEntity){
+        viewModelScope.launch { habitsProvider.deleteHabit(habitToDelete) }
     }
 
-    private fun getFilteredHabits(habits: ArrayList<Habit>, settings: ListViewSettings): ArrayList<Habit>{
-        val res = ArrayList(settings.searchByName?.let{ searchByName -> habits.filter { h -> h.name.contains(searchByName) } } ?: habits)
-        settings.sortByDescending?.let{ sortByDescending -> if (sortByDescending) res.sortByDescending { h -> h.creationDate } else res.sortBy{ h -> h.creationDate } }
-        return res
-    }
+    private fun getFilteredHabits(habits: List<HabitEntity>, settings: ListViewSettings): List<HabitEntity>{
+        val res = settings.searchByName?.let{ searchByName ->
+            if (searchByName.isEmpty())
+                habits
+            else
+                habits.filter { h -> h.name.contains(searchByName) }
+        } ?: habits
 
-    override fun onHabitChanged() {
-        loadHabits()
+        return settings.sortByDescending?.let{ sortByDescending -> if (sortByDescending) res.sortedByDescending { h -> h.creationDate } else res.sortedBy{ h -> h.creationDate } } ?: res
     }
 }

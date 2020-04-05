@@ -13,31 +13,6 @@ import kotlinx.android.synthetic.main.view_pager_layout.*
 
 class ViewPagerFragment: Fragment() {
     private var habitsViewPagerAdapter: HabitsViewPagerAdapter? = null
-    private var habits: ArrayList<Habit> = ArrayList()
-
-    companion object{
-        private const val HABITS_ARG = "HABITS_ARG"
-
-        fun newInstance(habits: ArrayList<Habit>) : ViewPagerFragment {
-            val args = Bundle()
-            args.putParcelableArrayList(HABITS_ARG, habits)
-            val newFragment =
-                ViewPagerFragment()
-            newFragment.arguments = args
-            return newFragment
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(HABITS_ARG, habits)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        habits = arguments?.getParcelableArrayList(HABITS_ARG)
-            ?: savedInstanceState?.getParcelableArrayList(HABITS_ARG) ?: ArrayList()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,7 +27,6 @@ class ViewPagerFragment: Fragment() {
         activity?.let{ _ ->
             habitsViewPagerAdapter =
                 HabitsViewPagerAdapter(
-                    habits,
                     childFragmentManager,
                     this.lifecycle
                 )

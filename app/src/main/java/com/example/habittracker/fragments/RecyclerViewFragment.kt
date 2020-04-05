@@ -1,22 +1,28 @@
-package com.example.habittracker.fragments
-
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.habittracker.models.Habit
+import androidx.recyclerview.widget.RecyclerView
 import com.example.habittracker.R
 import com.example.habittracker.adapters.RecyclerAdapter
+import com.example.habittracker.models.HabitType
+import com.example.habittracker.models.viewmodels.ListHabitsViewModel
+import com.example.habittracker.models.viewmodels.ListViewModelProviderFactory
+import com.example.habittracker.repository.RoomHabitsProvider
 import kotlinx.android.synthetic.main.recycler_view_fragment.*
+import pl.kitek.rvswipetodelete.SwipeToDeleteCallback
 import java.util.*
-import kotlin.collections.ArrayList
 
 class RecyclerViewFragment : Fragment() {
+    private lateinit var viewModel: ListHabitsViewModel
     private var recyclerAdapter: RecyclerAdapter? = null
-    private var habits: ArrayList<Habit> = ArrayList()
+    private var habitType: HabitType? = null
     private var callback: RecyclerViewCallback? = null
 
     interface RecyclerViewCallback {
@@ -24,11 +30,11 @@ class RecyclerViewFragment : Fragment() {
     }
 
     companion object{
-        private const val HABITS_ARG = "HABITS_ARG"
+        private const val HABIT_TYPE_ARG = "HABIT_TYPE_ARG"
 
-        fun newInstance(habits: ArrayList<Habit>) : RecyclerViewFragment {
+        fun newInstance(habitType: HabitType) : RecyclerViewFragment {
             val args = Bundle()
-            args.putParcelableArrayList(HABITS_ARG, habits)
+            args.putString(HABIT_TYPE_ARG, habitType.name)
             val newFragment =
                 RecyclerViewFragment()
             newFragment.arguments = args
@@ -38,7 +44,7 @@ class RecyclerViewFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(HABITS_ARG, habits)
+        habitType?.let{outState.putString(HABIT_TYPE_ARG, it.name)}
     }
 
     override fun onAttach(context: Context) {
@@ -48,9 +54,14 @@ class RecyclerViewFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        habits = arguments?.getParcelableArrayList(HABITS_ARG)
-            ?: savedInstanceState?.getParcelableArrayList(HABITS_ARG) ?: ArrayList()
-    }
+        (arguments?.getString(HABIT_TYPE_ARG) ?: savedInstanceState?.getString(HABIT_TYPE_ARG))?.let{
+            habitType = HabitType.valueOf(it)
+        }
+
+        activity?.let{ activity ->
+            viewModel = ViewModelProvider(activity, ListViewModelProviderFactory)
+                .get(ListHabitsViewModel::class.java)
+        }    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,16 +73,28 @@ class RecyclerViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recyclerView.apply {
-            callback?.let { callback ->
-                recyclerAdapter =
-                    RecyclerAdapter(habits)
-                layoutManager = LinearLayoutManager(activity)
-                recyclerAdapter?.setOnViewHolderClickListener { habit, _ ->
-                    callback.onEditClickListener(habit.id)
+        viewModel.habitsSource.observe(this, androidx.lifecycle.Observer { habits -> viewModel.updateFilteredHabits(habits) })
+        viewModel.filteredHabits.observe(this, androidx.lifecycle.Observer { habits ->
+            recyclerView.apply {
+                callback?.let { callback ->
+                    recyclerAdapter = RecyclerAdapter(habitType?.let{ type -> habits.filter { habit -> habit.type == type }} ?: habits)
+                    layoutManager = LinearLayoutManager(activity)
+                    recyclerAdapter?.setOnViewHolderClickListener { habit, _ ->
+                        callback.onEditClickListener(habit.id)
+                    }
+                    adapter = recyclerAdapter
+
+                    val swipeHandler = object : SwipeToDeleteCallback(context) {
+                        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                            val adapter = recyclerView.adapter as RecyclerAdapter
+                            val habitToDelete = adapter.getItemAt(viewHolder.adapterPosition)
+                            viewModel.deleteHabit(habitToDelete.toHabitEntity())
+                        }
+                    }
+                    val itemTouchHelper = ItemTouchHelper(swipeHandler)
+                    itemTouchHelper.attachToRecyclerView(recyclerView)
                 }
-                adapter = recyclerAdapter
             }
-        }
+        })
     }
 }

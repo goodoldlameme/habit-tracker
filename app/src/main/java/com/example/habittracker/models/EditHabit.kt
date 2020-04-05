@@ -1,6 +1,7 @@
 package com.example.habittracker.models
 
 import android.graphics.Color
+import com.example.habittracker.database.HabitEntity
 import java.util.*
 import kotlin.random.Random
 
@@ -14,7 +15,7 @@ class EditHabit(var name: String? = null,
                 var creationDate: Calendar? = null) {
 
     companion object {
-        fun fromHabit(habit: Habit): EditHabit {
+        fun fromHabitEntity(habit: HabitEntity): EditHabit {
             return EditHabit(
                 habit.name,
                 habit.description,
@@ -28,8 +29,8 @@ class EditHabit(var name: String? = null,
         }
     }
 
-    fun toHabit(habitId: UUID?): Habit {
-        return Habit(
+    fun toHabitEntity(habitId: UUID?): HabitEntity {
+        return HabitEntity(
             name.toString(),
             description.toString(),
             priority ?: 1,
@@ -42,7 +43,7 @@ class EditHabit(var name: String? = null,
                 Random.nextInt(256),
                 Random.nextInt(256)
             ),
-            habitId ?: UUID.randomUUID(),
+            habitId?.toString() ?: UUID.randomUUID().toString(),
             creationDate ?: Calendar.getInstance()
         )
     }

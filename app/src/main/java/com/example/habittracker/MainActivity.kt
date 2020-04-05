@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import com.example.habittracker.fragments.AboutFragment
 import com.example.habittracker.fragments.HabitManagementFragment
 import com.example.habittracker.fragments.MainFragment
-import com.example.habittracker.fragments.RecyclerViewFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -20,27 +19,57 @@ class MainActivity :
     RecyclerViewFragment.RecyclerViewCallback,
     MainFragment.MainFragmentCallback,
     HabitManagementFragment.HabitManagementCallback{
-    private lateinit var mainFragment: MainFragment
-    private lateinit var habitManagementFragment: HabitManagementFragment
-
-    companion object {
-        private const val MAIN_FRAGMENT = "MAIN_FRAGMENT"
-        private const val HABIT_MANAGEMENT_FRAGMENT = "HABIT_MANAGEMENT_FRAGMENT"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(mainToolbar)
+        instantiateFragments()
         configureNavigationDrawer()
         if (!tryConfigureToolbarWithHomeButton())
             configureToolbarWithBackButton()
-        instantiateSavedInstance(savedInstanceState)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home)
+        {
+            if (isNullOrMenuFragment(supportFragmentManager.findFragmentById(R.id.mainFragment)))
+                drawerLayout.openDrawer(GravityCompat.START)
+            else {
+                supportFragmentManager.popBackStackImmediate()
+                if (!tryConfigureToolbarWithHomeButton())
+                    configureToolbarWithBackButton()
+            }
+        }
+        return true;
+    }
+
+    override fun onBackPressed() {
+        supportFragmentManager.findFragmentById(R.id.mainFragment)?.let{ fragment ->
+            if (fragment is MainFragment && fragment.childFragmentManager.backStackEntryCount != 0){
+                fragment.childFragmentManager.popBackStackImmediate()
+                fragment.bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
+                return
+            }
+        }
+        super.onBackPressed();
+        if (!tryConfigureToolbarWithHomeButton())
+            configureToolbarWithBackButton()
+    }
+
+    override fun onEditClickListener(habitId: UUID) =
+        updateAndConfigureToolBarWithBackButton(HabitManagementFragment.newInstance(habitId))
+
+    override fun onSaveClickListener() {
+        supportFragmentManager.popBackStack()
+        configureToolbarWithHomeButton()
+    }
+
+    override fun setFabOnClickListener() =
+        updateAndConfigureToolBarWithBackButton(HabitManagementFragment())
+
     private fun tryConfigureToolbarWithHomeButton(): Boolean {
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.mainFragment)
-        if (isMenuFragment(currentFragment)){
+        if (isNullOrMenuFragment(supportFragmentManager.findFragmentById(R.id.mainFragment))){
             configureToolbarWithHomeButton()
             return true
         }
@@ -75,132 +104,39 @@ class MainActivity :
     }
 
     private fun setAboutFragment(): Boolean{
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.mainFragment)
-        val transaction = supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.mainFragment,
-                AboutFragment()
-            )
-            .addToBackStack(null)
-
-        if (currentFragment !is AboutFragment)
-            transaction.commit()
+        if (supportFragmentManager.findFragmentById(R.id.mainFragment) !is AboutFragment)
+            updateFragment(AboutFragment(), true)
 
         configureToolbarWithHomeButton()
         drawerLayout.closeDrawers()
         return true
     }
 
-    private fun isMenuFragment(fragment: Fragment?) =
-        fragment == null || fragment is MainFragment || fragment is AboutFragment
+    private fun isMenuFragment(fragment: Fragment?): Boolean =
+        fragment is MainFragment || fragment is AboutFragment
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val itemId = item.itemId;
-        if (itemId == android.R.id.home)
-        {
-            val currentFragment = supportFragmentManager.findFragmentById(R.id.mainFragment)
-                if (isMenuFragment(currentFragment))
-                    drawerLayout.openDrawer(GravityCompat.START)
-            else {
-                supportFragmentManager.popBackStackImmediate()
-                if (!tryConfigureToolbarWithHomeButton())
-                    configureToolbarWithBackButton()
-            }
-            return true
-        }
-        return true;
+    private fun isNullOrMenuFragment(fragment: Fragment?): Boolean =
+        fragment == null || isMenuFragment(fragment)
+
+    private fun instantiateFragments(){
+        if (supportFragmentManager.findFragmentById(R.id.mainFragment) == null)
+            updateFragment(MainFragment())
     }
 
-    private fun instantiateSavedInstance(savedInstanceState: Bundle?){
-        if (savedInstanceState == null) {
-            mainFragment = MainFragment()
-            habitManagementFragment =
-                HabitManagementFragment()
-
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.mainFragment, mainFragment)
-                .commit()
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        supportFragmentManager.putFragment(outState, MAIN_FRAGMENT, mainFragment)
-        if (habitManagementFragment.isAdded) {
-            supportFragmentManager.putFragment(
-                outState,
-                HABIT_MANAGEMENT_FRAGMENT,
-                habitManagementFragment
-            )
-        }
-    }
-
-    override fun onBackPressed() {
-        if (mainFragment.isAdded && mainFragment.childFragmentManager.backStackEntryCount != 0){
-            mainFragment.childFragmentManager.popBackStackImmediate()
-            mainFragment.bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
-            return
-        }
-        if (supportFragmentManager.backStackEntryCount != 0) {
-            supportFragmentManager.popBackStackImmediate()
-            if (!tryConfigureToolbarWithHomeButton())
-                configureToolbarWithBackButton()
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        restoreFragments(savedInstanceState)
-    }
-
-    private fun restoreFragments(savedInstanceState: Bundle){
-        mainFragment = supportFragmentManager.getFragment(
-            savedInstanceState,
-            MAIN_FRAGMENT
-        ) as MainFragment
-
-        val savedHabitManagementFragment = supportFragmentManager.getFragment(
-            savedInstanceState,
-            HABIT_MANAGEMENT_FRAGMENT
-        )
-        habitManagementFragment =
-            if (savedHabitManagementFragment != null)
-                savedHabitManagementFragment as HabitManagementFragment
-            else HabitManagementFragment()
-    }
-
-    override fun onEditClickListener(habitId: UUID) {
-        supportFragmentManager.beginTransaction().remove(habitManagementFragment)
-        habitManagementFragment = HabitManagementFragment.newInstance(habitId)
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.mainFragment, habitManagementFragment)
-            .addToBackStack(null)
-            .commit()
+    private fun updateAndConfigureToolBarWithBackButton(fragment: Fragment){
+        updateFragment(fragment, true)
         configureToolbarWithBackButton()
     }
 
-    override fun onSaveClickListener() {
-        supportFragmentManager.popBackStack()
-        configureToolbarWithHomeButton()
-    }
-
-    override fun setFabOnClickListener() {
-        if (habitManagementFragment.isAdded) {
-            supportFragmentManager.beginTransaction().remove(habitManagementFragment)
-        }
-        habitManagementFragment =
-            HabitManagementFragment()
-        supportFragmentManager
+    private fun updateFragment(fragment: Fragment, addToBackStack: Boolean = false){
+        var transaction = supportFragmentManager
             .beginTransaction()
-            .replace(R.id.mainFragment, habitManagementFragment)
-            .addToBackStack(null)
-            .commit()
+            .replace(R.id.mainFragment, fragment)
 
-        configureToolbarWithBackButton()
+        if (addToBackStack)
+            transaction = transaction.addToBackStack(null)
+
+        transaction.commit()
     }
 }
 
