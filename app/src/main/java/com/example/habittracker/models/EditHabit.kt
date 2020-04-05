@@ -1,4 +1,4 @@
-package com.example.habittracker
+package com.example.habittracker.models
 
 import android.graphics.Color
 import java.util.*
@@ -28,7 +28,7 @@ class EditHabit(var name: String? = null,
         }
     }
 
-    fun toHabit(habitId: UUID?): Habit{
+    fun toHabit(habitId: UUID?): Habit {
         return Habit(
             name.toString(),
             description.toString(),
@@ -36,10 +36,12 @@ class EditHabit(var name: String? = null,
             type ?: HabitType.Good,
             count ?: 0,
             period ?: 0,
-            color ?: Color.argb(255,
+            color ?: Color.argb(
+                255,
                 Random.nextInt(256),
                 Random.nextInt(256),
-                Random.nextInt(256)),
+                Random.nextInt(256)
+            ),
             habitId ?: UUID.randomUUID(),
             creationDate ?: Calendar.getInstance()
         )

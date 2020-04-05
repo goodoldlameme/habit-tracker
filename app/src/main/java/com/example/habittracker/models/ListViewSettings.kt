@@ -1,4 +1,4 @@
-package com.example.habittracker
+package com.example.habittracker.models
 
 class ListViewSettings(
     var sortByDescending: Boolean? = null,

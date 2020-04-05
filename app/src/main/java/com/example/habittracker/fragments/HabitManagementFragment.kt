@@ -1,23 +1,24 @@
-package com.example.habittracker
+package com.example.habittracker.fragments
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.RadioButton
 import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.habittracker.*
+import com.example.habittracker.common.onTextChangeButtonEnabler
+import com.example.habittracker.models.HabitType
+import com.example.habittracker.models.viewmodels.ManagementViewModel
+import com.example.habittracker.repository.LocalHabitsProvider
 import kotlinx.android.synthetic.main.habit_fragment.*
 import java.util.*
-import kotlin.random.Random
 
 class HabitManagementFragment: Fragment() {
     private var callback: HabitManagementCallback? = null
@@ -27,10 +28,11 @@ class HabitManagementFragment: Fragment() {
     companion object{
         private const val HABIT_UUID_ARGS = "HABIT_UUID_ARGS"
 
-        fun newInstance(habitUUID: UUID) : HabitManagementFragment{
+        fun newInstance(habitUUID: UUID) : HabitManagementFragment {
             val args = Bundle()
             args.putSerializable(HABIT_UUID_ARGS, habitUUID)
-            val newFragment = HabitManagementFragment()
+            val newFragment =
+                HabitManagementFragment()
             newFragment.arguments = args
             return newFragment
         }
@@ -43,7 +45,10 @@ class HabitManagementFragment: Fragment() {
 
         viewModel = ViewModelProvider(this, object: ViewModelProvider.Factory{
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return ManagementViewModel(LocalHabitsProvider, habitUUID) as T
+                return ManagementViewModel(
+                    LocalHabitsProvider,
+                    habitUUID
+                ) as T
             }
         }).get(ManagementViewModel::class.java)
     }

@@ -5,6 +5,10 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
+import com.example.habittracker.fragments.AboutFragment
+import com.example.habittracker.fragments.HabitManagementFragment
+import com.example.habittracker.fragments.MainFragment
+import com.example.habittracker.fragments.RecyclerViewFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -74,7 +78,9 @@ class MainActivity :
         val currentFragment = supportFragmentManager.findFragmentById(R.id.mainFragment)
         val transaction = supportFragmentManager
             .beginTransaction()
-            .replace(R.id.mainFragment, AboutFragment())
+            .replace(R.id.mainFragment,
+                AboutFragment()
+            )
             .addToBackStack(null)
 
         if (currentFragment !is AboutFragment)
@@ -108,7 +114,8 @@ class MainActivity :
     private fun instantiateSavedInstance(savedInstanceState: Bundle?){
         if (savedInstanceState == null) {
             mainFragment = MainFragment()
-            habitManagementFragment = HabitManagementFragment()
+            habitManagementFragment =
+                HabitManagementFragment()
 
             supportFragmentManager
                 .beginTransaction()
@@ -185,7 +192,8 @@ class MainActivity :
         if (habitManagementFragment.isAdded) {
             supportFragmentManager.beginTransaction().remove(habitManagementFragment)
         }
-        habitManagementFragment = HabitManagementFragment()
+        habitManagementFragment =
+            HabitManagementFragment()
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.mainFragment, habitManagementFragment)

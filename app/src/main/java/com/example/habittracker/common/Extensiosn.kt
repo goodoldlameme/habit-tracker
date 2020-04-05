@@ -1,4 +1,4 @@
-package com.example.habittracker
+package com.example.habittracker.common
 
 import android.text.Editable
 import android.text.TextWatcher

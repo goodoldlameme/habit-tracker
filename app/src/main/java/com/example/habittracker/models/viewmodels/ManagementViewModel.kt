@@ -1,8 +1,12 @@
-package com.example.habittracker
+package com.example.habittracker.models.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.habittracker.events.HabitChangedEventHandler
+import com.example.habittracker.repository.HabitsProvider
+import com.example.habittracker.models.EditHabit
+import com.example.habittracker.models.HabitType
 import java.util.*
 
 class ManagementViewModel(private val habitsProvider: HabitsProvider, private val habitId: UUID?): ViewModel() {

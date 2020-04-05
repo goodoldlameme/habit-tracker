@@ -1,6 +1,7 @@
-package com.example.habittracker
+package com.example.habittracker.common
 
 import androidx.annotation.StringRes
+import com.example.habittracker.App
 
 object Strings {
     fun get(@StringRes stringRes: Int, vararg formatArgs: Any = emptyArray()): String {

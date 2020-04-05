@@ -1,11 +1,12 @@
-package com.example.habittracker
+package com.example.habittracker.adapters
 
-import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.habittracker.fragments.RecyclerViewFragment
+import com.example.habittracker.models.Habit
+import com.example.habittracker.models.HabitType
 
 
 class HabitsViewPagerAdapter(private val habits: ArrayList<Habit>, private val fm: FragmentManager, lifecycle: Lifecycle):
@@ -16,7 +17,8 @@ class HabitsViewPagerAdapter(private val habits: ArrayList<Habit>, private val f
     override fun createFragment(position: Int): Fragment {
         return when(position){
             0 -> { RecyclerViewFragment.newInstance(ArrayList(habits.filter { habit -> habit.type == HabitType.Good}))}
-            else -> {RecyclerViewFragment.newInstance(ArrayList(habits.filter { habit -> habit.type == HabitType.Bad}))}
+            else -> {
+                RecyclerViewFragment.newInstance(ArrayList(habits.filter { habit -> habit.type == HabitType.Bad}))}
         }
     }
 }

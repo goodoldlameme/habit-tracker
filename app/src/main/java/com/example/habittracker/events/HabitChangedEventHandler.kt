@@ -1,4 +1,4 @@
-package com.example.habittracker
+package com.example.habittracker.events
 
 object HabitChangedEventHandler {
     private val onHabitsChangeListeners: ArrayList<HabitChangeListener> = ArrayList()

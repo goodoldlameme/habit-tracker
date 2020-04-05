@@ -1,4 +1,4 @@
-package com.example.habittracker
+package com.example.habittracker.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -10,6 +10,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.habittracker.*
+import com.example.habittracker.events.HabitChangedEventHandler
+import com.example.habittracker.models.Habit
+import com.example.habittracker.models.ListViewSettings
+import com.example.habittracker.models.viewmodels.ListHabitsViewModel
+import com.example.habittracker.repository.LocalHabitsProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import kotlinx.android.synthetic.main.main_fragment.*
@@ -41,11 +47,15 @@ class MainFragment : Fragment(){
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this, object: ViewModelProvider.Factory{
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return ListHabitsViewModel(LocalHabitsProvider) as T
+                return ListHabitsViewModel(
+                    LocalHabitsProvider
+                ) as T
             }
         }).get(ListHabitsViewModel::class.java)
 
-        HabitChangedEventHandler.setOnHabitChangeListener(viewModel)
+        HabitChangedEventHandler.setOnHabitChangeListener(
+            viewModel
+        )
     }
 
     override fun onCreateView(
@@ -72,7 +82,7 @@ class MainFragment : Fragment(){
         viewModel.viewSettings.value?.let{ settings ->
             bottomSheetSearch.setText(settings.searchByName)
             if (settings.sortByDescending != null)
-                sortRadioGroup.check(if (settings.sortByDescending as Boolean) R.id.descendingSort else R.id.ascendingSort )
+                sortRadioGroup.check(if (settings.sortByDescending as Boolean) R.id.descendingSort else R.id.ascendingSort)
         }
     }
 
@@ -83,7 +93,11 @@ class MainFragment : Fragment(){
                 viewModel.viewSettings.value?.let{ settings ->
                     settings.searchByName = newText
                     viewModel.updateViewSettings(settings)
-                } ?: viewModel.updateViewSettings(ListViewSettings(searchByName = newText))
+                } ?: viewModel.updateViewSettings(
+                    ListViewSettings(
+                        searchByName = newText
+                    )
+                )
                 viewModel.loadHabits()
             }
         }
@@ -96,7 +110,11 @@ class MainFragment : Fragment(){
                 viewModel.viewSettings.value?.let { settings ->
                     settings.sortByDescending = sortOptions
                     viewModel.updateViewSettings(settings)
-                } ?: viewModel.updateViewSettings(ListViewSettings(sortByDescending = sortOptions))
+                } ?: viewModel.updateViewSettings(
+                    ListViewSettings(
+                        sortByDescending = sortOptions
+                    )
+                )
                 viewModel.loadHabits()
             }
         }
@@ -121,7 +139,9 @@ class MainFragment : Fragment(){
             return if (bottomSheetSearch.text.isNullOrEmpty()){
                 viewModel.updateViewSettings(null)
                 sortRadioGroup.clearCheck()
-                ViewPagerFragment.newInstance(habits)
+                ViewPagerFragment.newInstance(
+                    habits
+                )
             }
             else null
     }
@@ -141,7 +161,9 @@ class MainFragment : Fragment(){
     private fun setFragment(state: Int, habits: ArrayList<Habit>) =
         when(state){
             BottomSheetBehavior.STATE_COLLAPSED -> getViewPagerFragment(habits)
-            BottomSheetBehavior.STATE_EXPANDED -> RecyclerViewFragment.newInstance(habits)
+            BottomSheetBehavior.STATE_EXPANDED -> RecyclerViewFragment.newInstance(
+                habits
+            )
             else -> null
         }?.let { fragment ->  addNewFragment(fragment) }
 }

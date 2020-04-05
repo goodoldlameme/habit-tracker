@@ -1,10 +1,11 @@
-package com.example.habittracker
+package com.example.habittracker.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.habittracker.R
 import kotlinx.android.synthetic.main.about_fragment.*
 
 class AboutFragment : Fragment(){

@@ -1,4 +1,4 @@
-package com.example.habittracker
+package com.example.habittracker.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -7,6 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.habittracker.models.Habit
+import com.example.habittracker.R
+import com.example.habittracker.adapters.RecyclerAdapter
 import kotlinx.android.synthetic.main.recycler_view_fragment.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -23,10 +26,11 @@ class RecyclerViewFragment : Fragment() {
     companion object{
         private const val HABITS_ARG = "HABITS_ARG"
 
-        fun newInstance(habits: ArrayList<Habit>) : RecyclerViewFragment{
+        fun newInstance(habits: ArrayList<Habit>) : RecyclerViewFragment {
             val args = Bundle()
             args.putParcelableArrayList(HABITS_ARG, habits)
-            val newFragment = RecyclerViewFragment()
+            val newFragment =
+                RecyclerViewFragment()
             newFragment.arguments = args
             return newFragment
         }
@@ -60,7 +64,8 @@ class RecyclerViewFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         recyclerView.apply {
             callback?.let { callback ->
-                recyclerAdapter = RecyclerAdapter(habits)
+                recyclerAdapter =
+                    RecyclerAdapter(habits)
                 layoutManager = LinearLayoutManager(activity)
                 recyclerAdapter?.setOnViewHolderClickListener { habit, _ ->
                     callback.onEditClickListener(habit.id)

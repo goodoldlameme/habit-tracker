@@ -1,10 +1,15 @@
-package com.example.habittracker
+package com.example.habittracker.models.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.habittracker.events.HabitChangeListener
+import com.example.habittracker.repository.HabitsProvider
+import com.example.habittracker.models.ListViewSettings
+import com.example.habittracker.models.Habit
 
-class ListHabitsViewModel(private val habitsProvider: HabitsProvider) : ViewModel(), HabitChangeListener{
+class ListHabitsViewModel(private val habitsProvider: HabitsProvider) : ViewModel(),
+    HabitChangeListener {
     private val mutableHabits: MutableLiveData<ArrayList<Habit>> = MutableLiveData()
     val habits: LiveData<ArrayList<Habit>> = mutableHabits
 
