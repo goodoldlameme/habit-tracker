@@ -10,8 +10,8 @@ abstract class HabitsDatabase: RoomDatabase(){
     companion object{
         private const val DB_NAME = "HabitsDatabase"
 
-        fun getInstance(context: Context): HabitsDatabase = Room.databaseBuilder(context, HabitsDatabase::class.java, DB_NAME)
-//                .allowMainThreadQueries()
+        fun getInstance(context: Context): HabitsDatabase =
+            Room.databaseBuilder(context, HabitsDatabase::class.java, DB_NAME)
                 .build()
     }
     abstract fun getHabitsDao(): HabitsDao
