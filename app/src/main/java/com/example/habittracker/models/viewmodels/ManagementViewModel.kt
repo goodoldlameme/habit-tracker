@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.habittracker.database.HabitEntity
+import com.example.habittracker.models.database.HabitEntity
 import com.example.habittracker.repository.HabitsProvider
-import com.example.habittracker.models.EditHabit
 import com.example.habittracker.models.HabitType
+import com.example.habittracker.models.Priority
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -20,11 +20,16 @@ class ManagementViewModel(private val habitsProvider: HabitsProvider, private va
     private val mutableEditHabit: MutableLiveData<EditHabit> = MutableLiveData()
     val editHabit: LiveData<EditHabit> = mutableEditHabit
 
+    fun loadHabitsFromRemote(){
+        viewModelScope.launch { habitsProvider.loadHabitsFromRemote() }
+    }
+
     fun setWithOutSource() {
         if (mutableEditHabit.value == null){
-            val editHabit = EditHabit()
+            val editHabit =
+                EditHabit()
             editHabit.type = HabitType.Good
-            editHabit.priority = 1
+            editHabit.priority = Priority.Medium
             mutableEditHabit.value = editHabit
         }
     }
@@ -41,7 +46,7 @@ class ManagementViewModel(private val habitsProvider: HabitsProvider, private va
 
     fun updateHabit(){
         viewModelScope.launch { mutableEditHabit.value?.let {h ->
-            habitsProvider.addOrUpdateHabit(h.toHabitEntity(habitId)) }
+            habitsProvider.addOrUpdateHabit(h.toHabitDto(habitId))}
         }
     }
 }

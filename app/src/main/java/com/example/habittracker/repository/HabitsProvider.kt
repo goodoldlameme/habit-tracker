@@ -1,19 +1,19 @@
 package com.example.habittracker.repository
 
 import androidx.lifecycle.LiveData
-import com.example.habittracker.database.HabitEntity
-import com.example.habittracker.models.Habit
+import com.example.habittracker.models.database.HabitEntity
+import com.example.habittracker.models.netcommunication.HabitDto
 import java.util.*
-import kotlin.collections.ArrayList
-
 
 interface HabitsProvider {
     fun getHabit(habitID: UUID?): LiveData<HabitEntity>
 
-    fun loadHabits(): LiveData<List<HabitEntity>>
+    fun getHabits(): LiveData<List<HabitEntity>>
 
-    suspend fun addOrUpdateHabit(habitEntity: HabitEntity)
+    suspend fun loadHabitsFromRemote()
 
-    suspend fun deleteHabit(habitEntity: HabitEntity)
+    suspend fun addOrUpdateHabit(habitDto: HabitDto)
+
+    suspend fun deleteHabit(habitEntity: HabitEntity): Boolean
 }
 

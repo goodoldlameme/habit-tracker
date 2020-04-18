@@ -10,14 +10,10 @@ import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.habittracker.*
-import com.example.habittracker.models.Habit
-import com.example.habittracker.models.ListViewSettings
 import com.example.habittracker.models.viewmodels.ListHabitsViewModel
 import com.example.habittracker.models.viewmodels.ListViewModelProviderFactory
-import com.example.habittracker.repository.RoomHabitsProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import kotlinx.android.synthetic.main.main_fragment.*

@@ -56,7 +56,7 @@ class RecyclerAdapter(private val habits: List<Habit>) : RecyclerView.Adapter<Re
             this.habit = habit
             view.itemName.text = habit.name
             view.itemDescription.text = habit.description
-            view.itemColor.text = habit.priority.toString()
+            view.itemColor.text = habit.priority.name
             view.itemPeriod.text = Strings.get(
                 R.string.period_message,
                 habit.period

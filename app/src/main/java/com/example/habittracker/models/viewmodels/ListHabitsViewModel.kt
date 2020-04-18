@@ -4,16 +4,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.habittracker.database.HabitEntity
-import com.example.habittracker.repository.HabitsProvider
-import com.example.habittracker.models.ListViewSettings
+import com.example.habittracker.models.database.HabitEntity
 import com.example.habittracker.models.Habit
+import com.example.habittracker.repository.HabitsProvider
 import kotlinx.coroutines.launch
 
 class ListHabitsViewModel(private val habitsProvider: HabitsProvider) : ViewModel()
 {
-    val habitsSource: LiveData<List<HabitEntity>> by lazy {
-        habitsProvider.loadHabits()
+    val habitsSource: LiveData<List<HabitEntity>> by lazy{
+        habitsProvider.getHabits()
+    }
+
+    fun loadHabitsFromRemote(){
+        viewModelScope.launch { habitsProvider.loadHabitsFromRemote() }
     }
 
     private val mutableViewSettings: MutableLiveData<ListViewSettings> = MutableLiveData()
@@ -26,7 +29,8 @@ class ListHabitsViewModel(private val habitsProvider: HabitsProvider) : ViewMode
 
     fun updateViewSettings(selector: (ListViewSettings?) -> Unit){
         if (mutableViewSettings.value == null)
-            mutableViewSettings.value = ListViewSettings()
+            mutableViewSettings.value =
+                ListViewSettings()
         selector(mutableViewSettings.value)
         mutableHabits.value?.let{ updateFilteredHabits(it) }
     }
@@ -44,7 +48,10 @@ class ListHabitsViewModel(private val habitsProvider: HabitsProvider) : ViewMode
     }
 
     fun deleteHabit(habitToDelete: HabitEntity){
-        viewModelScope.launch { habitsProvider.deleteHabit(habitToDelete) }
+        viewModelScope.launch {
+        if (!habitsProvider.deleteHabit(habitToDelete))
+            mutableHabits.value?.let{ updateFilteredHabits(it) }
+        }
     }
 
     private fun getFilteredHabits(habits: List<HabitEntity>, settings: ListViewSettings): List<HabitEntity>{

@@ -2,12 +2,12 @@ package com.example.habittracker.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.example.habittracker.database.HabitEntity
+import com.example.habittracker.models.database.HabitEntity
 import java.util.*
 
 class Habit(val name: String,
             val description: String,
-            val priority: Int,
+            val priority: Priority,
             val type: HabitType,
             val count: Int,
             val period: Int,
@@ -18,7 +18,7 @@ class Habit(val name: String,
     constructor(parcel: Parcel) : this(
         parcel.readString().toString(),
         parcel.readString().toString(),
-        parcel.readInt(),
+        Priority.valueOf(parcel.readString().toString()),
         HabitType.valueOf(parcel.readString().toString()),
         parcel.readInt(),
         parcel.readInt(),
@@ -32,7 +32,7 @@ class Habit(val name: String,
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
         parcel.writeString(description)
-        parcel.writeInt(priority)
+        parcel.writeString(priority.name)
         parcel.writeString(type.name)
         parcel.writeInt(count)
         parcel.writeInt(period)
@@ -76,7 +76,7 @@ class Habit(val name: String,
         }
     }
 
-    fun toHabitEntity(): HabitEntity{
+    fun toHabitEntity(): HabitEntity {
         return HabitEntity(
             name,
             description,

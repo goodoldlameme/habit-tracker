@@ -16,6 +16,7 @@
     <string name="bottom_sheet_text">Filter And Sort</string>
     <string name="find_string">Search</string>
     <string name="sortInfo">Sort by creation data</string>
+    <string name="apikey">61860423-10fc-4711-8efb-2f037e382953</string>
     <string-array name="priorities">
         <item>1</item>
         <item>2</item>

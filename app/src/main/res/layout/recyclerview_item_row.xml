@@ -27,6 +27,7 @@
                 android:background="@color/design_default_color_primary_dark"
                 android:gravity="center"
                 android:textColor="#fff"
+                android:textSize="8sp"
                 tools:text="5" />
 
         <TextView

@@ -73,6 +73,7 @@ class RecyclerViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.loadHabitsFromRemote()
         viewModel.habitsSource.observe(this, androidx.lifecycle.Observer { habits -> viewModel.updateFilteredHabits(habits) })
         viewModel.filteredHabits.observe(this, androidx.lifecycle.Observer { habits ->
             recyclerView.apply {
