@@ -27,10 +27,11 @@ object RoomHabitsProvider: HabitsProvider{
         val response = HabitsRemoteService.retry{ remoteService.getHabits()}
 
         response?.let { response ->
-            response.body()?.let{ habitDtos ->
-                val habits = habitDtos.map { it.toHabitEntity() }
-                addOrUpdateToLocal(habits)
-            }
+            if (response.isSuccessful)
+                response.body()?.let{ habitDtos ->
+                    val habits = habitDtos.map { it.toHabitEntity() }
+                    addOrUpdateToLocal(habits)
+                }
         }
     }
 
@@ -43,10 +44,11 @@ object RoomHabitsProvider: HabitsProvider{
 
 
         response?.let{response ->
-            response.body()?.let{ id ->
-                val habitEntity = habitDto.toHabitEntity(id.uid)
-                habitsDatabase.getHabitsDao().insertOrReplaceHabit(habitEntity)
-            }
+            if (response.isSuccessful)
+                response.body()?.let{ id ->
+                    val habitEntity = habitDto.toHabitEntity(id.uid)
+                    habitsDatabase.getHabitsDao().insertOrReplaceHabit(habitEntity)
+                }
         }
     }
 
@@ -54,8 +56,10 @@ object RoomHabitsProvider: HabitsProvider{
         val response = HabitsRemoteService.retry{ remoteService.deleteHabit(HabitId(habitEntity.id))}
 
         response?.let{
-            habitsDatabase.getHabitsDao().deleteHabit(habitEntity)
-            return true
+            if (response.isSuccessful) {
+                habitsDatabase.getHabitsDao().deleteHabit(habitEntity)
+                return true
+            }
         }
         return false
     }
